@@ -1,0 +1,448 @@
+{
+  "info": {
+    "name": "Pollify API",
+    "description": "Collection for testing the local Pollify backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "test@example.com",
+      "type": "string"
+    },
+    {
+      "key": "otp",
+      "value": "000000",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "testuser",
+      "type": "string"
+    },
+    {
+      "key": "poll_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Test User",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "{{email}}",
+              "type": "text"
+            },
+            {
+              "key": "username",
+              "value": "{{username}}",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "12345678",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"{{otp}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/verify-otp",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "verify-otp"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.token) {",
+              "  pm.environment.set('token', json.token);",
+              "}" 
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"12345678\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.token) {",
+              "  pm.environment.set('token', json.token);",
+              "}" 
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Get Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/auth/me",
+          "host": ["{{base_url}}"],
+          "path": ["api", "auth", "me"]
+        }
+      }
+    },
+    {
+      "name": "Polls - Create Poll",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "question",
+              "value": "Do you like this app?",
+              "type": "text"
+            },
+            {
+              "key": "type",
+              "value": "yesno",
+              "type": "text"
+            },
+            {
+              "key": "category",
+              "value": "General",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/polls",
+          "host": ["{{base_url}}"],
+          "path": ["api", "polls"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json && json.poll && json.poll._id) {",
+              "  pm.environment.set('poll_id', json.poll._id);",
+              "}" 
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Polls - List Polls",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/polls",
+          "host": ["{{base_url}}"],
+          "path": ["api", "polls"]
+        }
+      }
+    },
+    {
+      "name": "Polls - My Polls",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/polls/mine",
+          "host": ["{{base_url}}"],
+          "path": ["api", "polls", "mine"]
+        }
+      }
+    },
+    {
+      "name": "Polls - Trending",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/polls/trending",
+          "host": ["{{base_url}}"],
+          "path": ["api", "polls", "trending"]
+        }
+      }
+    },
+    {
+      "name": "Polls - Vote",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"value\": \"Yes\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/polls/{{poll_id}}/vote",
+          "host": ["{{base_url}}"],
+          "path": ["api", "polls", "{{poll_id}}", "vote"]
+        }
+      }
+    },
+    {
+      "name": "Polls - Bookmark",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/polls/{{poll_id}}/bookmark",
+          "host": ["{{base_url}}"],
+          "path": ["api", "polls", "{{poll_id}}", "bookmark"]
+        }
+      }
+    },
+    {
+      "name": "Comments - Add Comment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Nice poll!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/comments/{{poll_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "comments", "{{poll_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Comments - Get Comments",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/comments/{{poll_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "comments", "{{poll_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Notifications - Get Notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/notifications",
+          "host": ["{{base_url}}"],
+          "path": ["api", "notifications"]
+        }
+      }
+    },
+    {
+      "name": "Notifications - Mark Read",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/notifications/read",
+          "host": ["{{base_url}}"],
+          "path": ["api", "notifications", "read"]
+        }
+      }
+    },
+    {
+      "name": "Users - Public Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users/{{username}}",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users", "{{username}}"]
+        }
+      }
+    },
+    {
+      "name": "Users - Follow / Unfollow",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users/{{username}}/follow",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users", "{{username}}", "follow"]
+        }
+      }
+    },
+    {
+      "name": "Users - Connections",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/users/{{username}}/connections",
+          "host": ["{{base_url}}"],
+          "path": ["api", "users", "{{username}}", "connections"]
+        }
+      }
+    }
+  ]
+}
