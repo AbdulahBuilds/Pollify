@@ -1,8 +1,14 @@
 import axios from "axios";
 
+const rawBaseURL = import.meta.env.VITE_API_URL || "/api";
+const normalizedBaseURL = rawBaseURL.trim().replace(/\/+$/, "");
+const baseURL = normalizedBaseURL.endsWith("/api")
+    ? normalizedBaseURL
+    : `${normalizedBaseURL}/api`;
+
 // Create single instance and support custom backend base URL for production.
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "/api",
+    baseURL,
 });
 
 // Attach JWT token to every request

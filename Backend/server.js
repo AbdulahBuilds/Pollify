@@ -28,10 +28,15 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
 app.use('/api/polls', pollRouter);
+app.use('/polls', pollRouter);
 app.use('/api/comments', commentRouter);
+app.use('/comments', commentRouter);
 app.use('/api/users', userRouter);
+app.use('/users', userRouter);
 app.use('/api/notifications', notificationRouter);
+app.use('/notifications', notificationRouter);
 
 app.get("/", (req, res) => {
     res.send("Pollify API is active and working");
