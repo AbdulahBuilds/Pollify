@@ -19,7 +19,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
 
         {/* Logo */}
         <div className={s.logoContainer}>
-          <img src="favicon.svg" alt="logo" className={s.logoImg} />
+          <img src="/favicon.svg" alt="logo" className={s.logoImg} />
           <span className={s.logoText}>Pollify</span>
         </div>
 
@@ -86,7 +86,7 @@ const AuthLayout = ({ title, subtitle, children }) => {
 
           <div className={s.mobileLogoContainer}>
             <img 
-              src="favicon.svg" 
+              src="/favicon.svg" 
               alt="logo" 
               className={s.mobileLogoImg} 
             />

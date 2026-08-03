@@ -74,8 +74,7 @@ export const registerUser = async (req, res) => {
 export const verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
-        const normalizedEmail = normalizeEmail(email);
-        const user = await User.findOne({ email: normalizedEmail });
+        const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: "User not found" });
 
         if (!user.isVerified && !otpValid(user, otp)) {
@@ -99,8 +98,7 @@ export const verifyOtp = async (req, res) => {
 // Resend OTP
 export const resendOtp = async (req, res) => {
     try {
-        const normalizedEmail = normalizeEmail(req.body.email);
-        const user = await User.findOne({ email: normalizedEmail });
+        const user = await User.findOne({ email: req.body.email });
         if (!user) return res.status(404).json({ message: "User not found" });
 
         user.otp = generateOtp();
@@ -123,8 +121,7 @@ export const resendOtp = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const normalizedEmail = normalizeEmail(email);
-        const user = await User.findOne({ email: normalizedEmail });
+        const user = await User.findOne({ email });
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
@@ -133,7 +130,7 @@ export const login = async (req, res) => {
             return res.status(403).json({
                 message: "Please verify your email first",
                 needsVerification: true,
-                email: normalizedEmail
+                email
             });
         }
 

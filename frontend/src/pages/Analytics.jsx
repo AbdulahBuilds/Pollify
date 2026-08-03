@@ -1,8 +1,8 @@
-import React, { Activity, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { analyticsStyles as s } from '../assets/dummyStyles'
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
-import { ArrowLeft, BarChart3, Eye, MessageCircle } from 'lucide-react';
+import { Activity, ArrowLeft, BarChart3, Eye, MessageCircle } from 'lucide-react';
 import PollResults from '../components/PollResults';
 
 function StatCard({ Icon, label, value, color }) {
@@ -37,7 +37,19 @@ const Analytics = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <PollSkeleton />;
+  if (loading) return (
+    <div className={s.container}>
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 w-32 rounded bg-zinc-800" />
+        <div className="h-4 w-3/4 rounded bg-zinc-800" />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-24 rounded-2xl bg-zinc-900" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
   if (error || !data)
     return (
       <div className={s.errorContainer}>

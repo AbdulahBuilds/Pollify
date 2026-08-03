@@ -41,7 +41,7 @@ const Layout = () => {
         <header className={s.header}>
             <div className={s.headerInner}>
                 <NavLink to='/dashboard' className={s.logoLink}>
-                    <img src="favicon.svg" alt='logo' className={s.logoImg} />
+                    <img src="/favicon.svg" alt='logo' className={s.logoImg} />
                     <span className={s.logoSpan}>Pollify</span>
                 </NavLink>
 
