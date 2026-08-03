@@ -30,6 +30,11 @@ const Layout = () => {
 
     useClickOutside(userRef, () => setUserOpen(false), userOpen);
 
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      navigate("/login");
+    };
+
 
   return (
     <div className={s.container}>
@@ -166,6 +171,15 @@ const Layout = () => {
               <span>{label.split(" ")[0]}</span>
             </NavLink>
           ))}
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className={`${s.bottomLinkBase} ${s.bottomLinkInactive} text-rose-500`}
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
         </nav>
 
     </div>

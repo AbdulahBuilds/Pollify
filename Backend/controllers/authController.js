@@ -8,6 +8,8 @@ import { sendOtpEmail } from "../config/mailer.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
+const normalizeEmail = (email) => (email || "").trim().toLowerCase();
+
 const makeToken = (id) =>
   jwt.sign({ id }, JWT_SECRET, { expiresIn: "7d" });
 const clean = (u) => ({
@@ -27,7 +29,8 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        const exist = await User.findOne({ $or: [{ email }, { username }] });
+        const normalizedEmail = normalizeEmail(email);
+        const exist = await User.findOne({ $or: [{ email: normalizedEmail }, { username }] });
         if (exist) {
             return res.status(400).json({ message: "User with this email or username already exists" });
         }
@@ -44,7 +47,7 @@ export const registerUser = async (req, res) => {
         const otp = generateOtp();
         await User.create({
             name,
-            email,
+            email: normalizedEmail,
             username,
             password,
             avatar,
@@ -53,14 +56,14 @@ export const registerUser = async (req, res) => {
         });
 
         try {
-            await sendOtpEmail(email, otp, "verify your Pollify account");
+            await sendOtpEmail(normalizedEmail, otp, "verify your Pollify account");
         } catch (e) {
             console.warn("Email send skipped:", e.message);
         }
 
         res.status(201).json({
             needsVerification: true,
-            email
+            email: normalizedEmail
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -71,7 +74,8 @@ export const registerUser = async (req, res) => {
 export const verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
-        const user = await User.findOne({ email });
+        const normalizedEmail = normalizeEmail(email);
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) return res.status(404).json({ message: "User not found" });
 
         if (!user.isVerified && !otpValid(user, otp)) {
@@ -95,7 +99,8 @@ export const verifyOtp = async (req, res) => {
 // Resend OTP
 export const resendOtp = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const normalizedEmail = normalizeEmail(req.body.email);
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) return res.status(404).json({ message: "User not found" });
 
         user.otp = generateOtp();
@@ -118,7 +123,8 @@ export const resendOtp = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const normalizedEmail = normalizeEmail(email);
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
@@ -127,7 +133,7 @@ export const login = async (req, res) => {
             return res.status(403).json({
                 message: "Please verify your email first",
                 needsVerification: true,
-                email
+                email: normalizedEmail
             });
         }
 
