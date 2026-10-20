@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 import dns from "dns";
+import 'dotenv/config';
+
+try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch (e) {
+    // Keep system DNS if setting servers fails
+}
 
 if (dns.setDefaultResultOrder) {
     dns.setDefaultResultOrder("ipv4first");
