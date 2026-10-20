@@ -2,10 +2,13 @@ import User from "../models/User.js";
 import { sendOtpEmail } from "../config/mailer.js";
 import { generateOtp, otpExpiry, otpValid } from "../utils/otp.js";
 
+const normalizeEmail = (email) => (email || "").trim().toLowerCase();
+
 // if user forgot the password send an email OTP
 export const forgotPassword = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const normalizedEmail = normalizeEmail(req.body.email);
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) return res.status(404).json({
             message: "No account with this email"
         });
@@ -31,7 +34,8 @@ export const forgotPassword = async (req, res) => {
 export const verifyResetOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
-        const user = await User.findOne({ email });
+        const normalizedEmail = normalizeEmail(email);
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) return res.status(404).json({
             message: "User not found"
         });
@@ -53,7 +57,8 @@ export const resetPassword = async (req, res) => {
             return res.status(400).json({
                 message: "Password must be at least of 8 characters"
             });
-        const user = await User.findOne({ email });
+        const normalizedEmail = normalizeEmail(email);
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) return res.status(404).json({
             message: "User not found"
         });

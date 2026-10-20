@@ -1,6 +1,7 @@
 import dns from "dns";
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder("ipv4first");
+}
 
 import express from "express";
 import cors from "cors";
@@ -12,16 +13,16 @@ import pollRouter from "./routes/pollRoutes.js";
 import commentRouter from "./routes/commentRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 
-// const dns = require('dns');
-// dns.setDefaultResultOrder('ipv4first');
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 const isVercel = Boolean(process.env.VERCEL);
 
 // MIDDLEWARE
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, postman) or any client origin
+        callback(null, true);
+    },
     credentials: true
 }));
 app.use(express.json());
