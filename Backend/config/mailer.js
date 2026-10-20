@@ -11,6 +11,11 @@ const transporter = nodemailer.createTransport({
 
 // to send 6 digits OTP via email
 export const sendOtpEmail = async (to, otp, reason = "verify your email") => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.log(`[DEV / NO-SMTP] OTP for ${to} (${reason}): ${otp}`);
+    return;
+  }
+
   await transporter.sendMail({
     from: `"Pollify" <${process.env.EMAIL_FROM || process.env.SMTP_USER}>`,
     to,
@@ -22,5 +27,5 @@ export const sendOtpEmail = async (to, otp, reason = "verify your email") => {
         <div style="font-size:34px;font-weight:800;letter-spacing:8px;color:#0f172a;margin:16px 0">${otp}</div>
         <p style="color:#94a3b8;font-size:13px">This code expires in 10 minutes. If you didn't request it, ignore this email.</p>
       </div>`,
-  })
-}
+  });
+};
